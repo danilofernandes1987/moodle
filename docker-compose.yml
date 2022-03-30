@@ -1,0 +1,33 @@
+version: '3.3'
+volumes:
+  data:
+services:
+  amb01:
+    container_name: moodleserver
+    build: .
+    ports:
+    - "9090:80"
+    - "9443:443"
+    volumes:
+    - ./moodledata/_data/:/var/www/moodledata
+    links:
+    - database
+
+  database:
+    image: mariadb:latest
+    container_name: moodledb
+    volumes:
+    - ./mysql/_data/:/var/lib/mysql
+    environment:
+    - MYSQL_ROOT_PASSWORD=myrootpass
+    - MYSQL_DATABASE=moodle
+    - MYSQL_USER=moodle_user
+    - MYSQL_PASSWORD=mymoodlepass
+  phpmyadmin:
+      image: phpmyadmin/phpmyadmin:latest
+      links:
+        - database
+      ports:
+        - 88:80
+      environment:
+        - PMA_ARBITRARY=1
